@@ -75,7 +75,9 @@ namespace BankOfSuncoastCS
             {
                 depOrWith = "deposit";
             }
-            Console.WriteLine($"How much would you like to {depOrWith}?");
+
+            var accountBalance = AccountBalance(TList, account);
+            Console.WriteLine($"Your current account balance is {accountBalance}. How much would you like to {depOrWith}?");
             var provAmountString = Console.ReadLine();
             var provAmount = int.Parse(provAmountString);
             if (depOrWith == "deposit")
@@ -85,7 +87,6 @@ namespace BankOfSuncoastCS
             }
             else   //withdraw
             {
-                var accountBalance = AccountBalance(TList, account);
                 while (accountBalance < provAmount)
                 {
                     Console.WriteLine($"You can't withdraw more money than is currently in your account. Your account balance is {accountBalance}, please enter a withdrawal amount that is less than or equal to your account balance.");
