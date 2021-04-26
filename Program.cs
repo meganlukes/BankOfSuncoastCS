@@ -10,6 +10,7 @@ namespace BankOfSuncoastCS
     class Transaction
     {
         public string Account { get; set; }
+        public string transactionType { get; set; }
         public int TransactionAmount { get; set; }
     }
     class Program
@@ -18,14 +19,22 @@ namespace BankOfSuncoastCS
         {
             if (account == "Savings")
             {
-                var savingsAccount = TList.Where(transact => transact.Account == "Savings");
-                var balance = savingsAccount.Sum(money => money.TransactionAmount);
+                var savingsAccount = TList.Where(countA => countA.Account == "Savings");
+                var withdrawals = savingsAccount.Where(type => type.transactionType == "Withdrawal");
+                var withdrawalsSum = withdrawals.Sum(money => money.TransactionAmount);
+                var deposits = savingsAccount.Where(type => type.transactionType == "Deposit");
+                var depositsSum = deposits.Sum(money => money.TransactionAmount);
+                int balance = depositsSum - withdrawalsSum;
                 return balance;
             }
             else
             {
-                var checkingAccount = TList.Where(transact => transact.Account == "Checking");
-                var balance = checkingAccount.Sum(money => money.TransactionAmount);
+                var checkingAccount = TList.Where(countA => countA.Account == "checking");
+                var withdrawals = checkingAccount.Where(type => type.transactionType == "Withdrawal");
+                var withdrawalsSum = withdrawals.Sum(money => money.TransactionAmount);
+                var deposits = checkingAccount.Where(type => type.transactionType == "Deposit");
+                var depositsSum = deposits.Sum(money => money.TransactionAmount);
+                int balance = depositsSum - withdrawalsSum;
                 return balance;
             }
 
@@ -72,6 +81,7 @@ namespace BankOfSuncoastCS
             if (depOrWith == "deposit")
             {
                 newTransact.TransactionAmount = provAmount;
+                newTransact.transactionType = "Deposit";
             }
             else   //withdraw
             {
@@ -82,11 +92,13 @@ namespace BankOfSuncoastCS
                     provAmountString = Console.ReadLine();
                     provAmount = int.Parse(provAmountString);
                 }
-                newTransact.TransactionAmount = -provAmount;
+                newTransact.TransactionAmount = provAmount;
             }
             TList.Add(newTransact);
             return TList;
         }
+
+
         static void Main(string[] args)
         {
             var fileReader = new StreamReader("BankOfSuncoast.csv");
