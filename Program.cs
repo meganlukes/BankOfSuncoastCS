@@ -2,6 +2,8 @@
 using CsvHelper;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Globalization;
 
 namespace BankOfSuncoastCS
 {
@@ -14,9 +16,19 @@ namespace BankOfSuncoastCS
     {
         static int AccountBalance(List<Transaction> TList, string account)
         {
-            //formula for acccount balance
-            int balance = 0;
-            return balance;
+            if (account == "Savings")
+            {
+                var savingsAccount = TList.Where(transact => transact.Account == "Savings");
+                var balance = savingsAccount.Sum(money => money.TransactionAmount);
+                return balance;
+            }
+            else
+            {
+                var checkingAccount = TList.Where(transact => transact.Account == "Checking");
+                var balance = checkingAccount.Sum(money => money.TransactionAmount);
+                return balance;
+            }
+
         }
         static string PromptForString(string prompt)
         {
@@ -40,6 +52,7 @@ namespace BankOfSuncoastCS
                 return 0;
             }
         }
+
         static List<Transaction> newTransaction(List<Transaction> TList, int transacttype, string account)
         {
             var newTransact = new Transaction();
@@ -62,21 +75,35 @@ namespace BankOfSuncoastCS
             }
             else   //withdraw
             {
-                var accountBalance = 0; //replace with var accountBalance = AccountBalance(TransactionList, account,);
+                var accountBalance = AccountBalance(TList, account);
                 while (accountBalance < provAmount)
                 {
                     Console.WriteLine($"You can't withdraw more money than is currently in your account. Your account balance is {accountBalance}, please enter a withdrawal amount that is less than or equal to your account balance.");
                     provAmountString = Console.ReadLine();
                     provAmount = int.Parse(provAmountString);
                 }
-                newTransact.TransactionAmount = provAmount;
+                newTransact.TransactionAmount = -provAmount;
             }
             TList.Add(newTransact);
             return TList;
         }
         static void Main(string[] args)
         {
-            var transactionsList = new List<Transaction>();
+            var fileReader = new StreamReader("BankOfSuncoast.csv");
+            var csvReader = new CsvReader(fileReader, CultureInfo.InvariantCulture);
+            //csvReader.Configuration.HasHeaderRecord = false;
+            var transactionsList = csvReader.GetRecords<Transaction>().ToList();
+            fileReader.Close();
+            //var transactionsList = new List<Transaction>();
+            TextReader reader;
+            if (File.Exists("BankOfSuncoast.csv"))
+            {
+                reader = new StreamReader("BankOfSuncoast.csv");
+            }
+            else
+            {
+                reader = new StringReader("");
+            }
             bool running = true;
             Console.WriteLine("Welcome to the First Bank of Suncoast.");
             while (running == true)
@@ -112,7 +139,7 @@ namespace BankOfSuncoastCS
                         {
                             newTransaction(transactionsList, -1, "Checking");
                         }
-                        else if (option == "D")   //Deposit into Savings
+                        else if (option == "S")   //Deposit into Savings
                         {
                             newTransaction(transactionsList, -1, "Savings");
                         }
@@ -129,7 +156,7 @@ namespace BankOfSuncoastCS
                         {
                             newTransaction(transactionsList, 1, "Checking");
                         }
-                        else if (option == "D")
+                        else if (option == "S")
                         {
                             newTransaction(transactionsList, 1, "Savings");
                         }
@@ -148,7 +175,10 @@ namespace BankOfSuncoastCS
 
             }
 
-
+            var fileWriter = new StreamWriter("BankOfSuncoast.csv");
+            var csvWriter = new CsvWriter(fileWriter, CultureInfo.InvariantCulture);
+            csvWriter.WriteRecords(transactionsList);
+            fileWriter.Close();
         }
     }
 }
