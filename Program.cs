@@ -20,20 +20,26 @@ namespace BankOfSuncoastCS
             if (account == "Savings")
             {
                 var savingsAccount = TList.Where(countA => countA.Account == "Savings");
+
                 var withdrawals = savingsAccount.Where(type => type.transactionType == "Withdrawal");
                 var withdrawalsSum = withdrawals.Sum(money => money.TransactionAmount);
+
                 var deposits = savingsAccount.Where(type => type.transactionType == "Deposit");
                 var depositsSum = deposits.Sum(money => money.TransactionAmount);
+
                 int balance = depositsSum - withdrawalsSum;
                 return balance;
             }
             else
             {
-                var checkingAccount = TList.Where(countA => countA.Account == "checking");
-                var withdrawals = checkingAccount.Where(type => type.transactionType == "Withdrawal");
-                var withdrawalsSum = withdrawals.Sum(money => money.TransactionAmount);
+                var checkingAccount = TList.Where(countA => countA.Account == "Checking");
+
+                var checkingWithdrawals = checkingAccount.Where(type => type.transactionType == "Withdrawal");
+                var withdrawalsSum = checkingWithdrawals.Sum(money => money.TransactionAmount);
+
                 var deposits = checkingAccount.Where(type => type.transactionType == "Deposit");
                 var depositsSum = deposits.Sum(money => money.TransactionAmount);
+
                 int balance = depositsSum - withdrawalsSum;
                 return balance;
             }
@@ -70,10 +76,13 @@ namespace BankOfSuncoastCS
             if (transacttype > 0)
             {
                 depOrWith = "withdraw";
+                newTransact.transactionType = "Withdrawal";
+
             }
             else
             {
                 depOrWith = "deposit";
+                newTransact.transactionType = "Deposit";
             }
 
             var accountBalance = AccountBalance(TList, account);
@@ -83,7 +92,6 @@ namespace BankOfSuncoastCS
             if (depOrWith == "deposit")
             {
                 newTransact.TransactionAmount = provAmount;
-                newTransact.transactionType = "Deposit";
             }
             else   //withdraw
             {
