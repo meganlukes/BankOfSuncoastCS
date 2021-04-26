@@ -116,11 +116,11 @@ namespace BankOfSuncoastCS
                     var choice = Console.ReadLine().ToUpper();
                     if (choice == "C")
                     {
-                        //balance method
+                        Console.WriteLine("The current balance of your checking account is $" + AccountBalance(transactionsList, "Checking") + ".");
                     }
                     else if (choice == "S")
                     {
-                        //balance method
+                        Console.WriteLine("The current balance of your savings account is $" + AccountBalance(transactionsList, "Savings") + ".");
                     }
                     else
                     {
